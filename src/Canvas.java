@@ -7,7 +7,10 @@ import java.awt.event.*;
  */
 public class Canvas extends JPanel implements ActionListener{
 
+    private int timeStamp = 0;
+    private int speed = 50;
     private Timer timer;
+    private Game game;
 
     public Canvas(int x, int y) {
 
@@ -18,6 +21,8 @@ public class Canvas extends JPanel implements ActionListener{
         setFocusable(true);
         setDoubleBuffered(true);
 
+        game = new Game();
+
         timer = new Timer(20, this);
         timer.start();
 
@@ -25,7 +30,7 @@ public class Canvas extends JPanel implements ActionListener{
 
     public void paint(Graphics g) {
         super.paint(g);
-
+        game.draw(g);
     }
 
     private class MouseMotionInput implements MouseMotionListener {
@@ -45,11 +50,7 @@ public class Canvas extends JPanel implements ActionListener{
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (timer.isRunning()) {
-                timer.stop();
-            } else {
-                timer.start();
-            }
+
         }
 
         @Override
@@ -78,11 +79,31 @@ public class Canvas extends JPanel implements ActionListener{
         @Override
         public void keyTyped(KeyEvent e) {
 
+            if (e.getExtendedKeyCode() == KeyEvent.VK_A) {
+                game.movePieceLeft();
+            }
+            if (e.getExtendedKeyCode() == KeyEvent.VK_D) {
+                game.movePieceRight();
+            }
+            if (e.getExtendedKeyCode() == KeyEvent.VK_E) {
+                game.rotatePieceCW();
+            }
+            if (e.getExtendedKeyCode() == KeyEvent.VK_Q) {
+                game.rotatePieceCCW();
+            }
+            if (e.getExtendedKeyCode() == KeyEvent.VK_R) {
+                game.reset();
+            }
         }
 
         @Override
         public void keyPressed(KeyEvent e) {
-
+            if (e.getExtendedKeyCode() == KeyEvent.VK_S) {
+                game.hardDrop();
+            }
+            if (e.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
+                game.tick();
+            }
         }
 
         @Override
@@ -93,6 +114,11 @@ public class Canvas extends JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        timeStamp++;
+        if (timeStamp >= speed) {
+            game.tick();
+            timeStamp = 0;
+        }
         repaint();
     }
 }
